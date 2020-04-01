@@ -1,0 +1,6 @@
+[submodule "ayumi"]
+	path = ayumi
+	url = https://github.com/true-grue/ayumi.git
+[submodule "z80"]
+	path = z80
+	url = https://github.com/redcode/Z80
