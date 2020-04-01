@@ -5,11 +5,11 @@
 
 /* a function to fill a realtime audio buffer */
 
-typedef void (* audio_callback_t) (double *buffer,
-                                   int n_frames,
-                                   int n_channels,
-                                   double rate,
-                                   void *data);
+typedef void (audio_callback_t) (double *buffer,
+                                 int n_frames,
+                                 int n_channels,
+                                 double rate,
+                                 void *data);
 
 /* a struct to hold an audio callback and an associated piece of data */
 

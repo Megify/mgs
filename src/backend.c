@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "backend.h"
+#include "sdl.h"
 
 backend_t *create_backend (void) {
 
     /* allocate memory for the instance and zero it */
 
     backend_t *backend = (backend_t *) malloc (sizeof (backend_t));
-    memset (backend, 0, sizeof (backend));
+    memset (backend, 0, sizeof (backend_t));
 
     /* initialize the windows vector and the audio callbacks vector */
 
@@ -45,9 +46,11 @@ void register_audio_callback (backend_t *backend,
                               audio_callback_t *callback,
                               void *data) {
 
-    register_audio_callback_t registered_callback;
+    /* TODO
+    registered_audio_callback_t registered_callback;
     registered_callback.callback = callback;
     registered_callback.data = data;
+    */
 
     /* TODO: push the object to the registered audio callbacks vector */
 }
@@ -56,9 +59,11 @@ void unregister_audio_callback (backend_t *backend,
                                 audio_callback_t *callback,
                                 void *data) {
 
-    register_audio_callback_t registered_callback;
+    /* TODO
+    registered_audio_callback_t registered_callback;
     registered_callback.callback = callback;
     registered_callback.data = data;
+    */
 
     /* TODO: remove this object from the regestired audio callbacks vector */
 }
@@ -68,13 +73,13 @@ void unregister_all_audio_callbacks (backend_t *backend) {
     /* TODO: iterate the callbacks vector and call the above function on each */
 }
 
-window_t *window create_window (backend_t *backend, const char *title
-                                                    int width, int height) {
+window_t *create_window (backend_t *backend, const char *title,
+                                             int width, int height) {
 
     /* allocate memory for the instance and zero it */
 
-    window_t *window = (backend_t *) malloc (sizeof (window_t));
-    memset (window, 0, sizeof (window));
+    window_t *window = (window_t *) malloc (sizeof (window_t));
+    memset (window, 0, sizeof (window_t));
 
     /* initialize the fields of the struct instance */
 
@@ -86,7 +91,7 @@ window_t *window create_window (backend_t *backend, const char *title
 
     /* TODO: push this window object to the windows vector */
 
-    return backend;
+    return window;
 }
 
 void destroy_window (window_t *window) {

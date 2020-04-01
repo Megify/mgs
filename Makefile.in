@@ -104,9 +104,13 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_mgs_OBJECTS = src/main.$(OBJEXT)
+am_mgs_OBJECTS = src/mgs-main.$(OBJEXT) src/mgs-backend.$(OBJEXT) \
+	src/mgs-interface.$(OBJEXT) src/mgs-mgs.$(OBJEXT) \
+	src/mgs-sdl.$(OBJEXT)
 mgs_OBJECTS = $(am_mgs_OBJECTS)
 mgs_LDADD = $(LDADD)
+mgs_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(mgs_LDFLAGS) $(LDFLAGS) -o \
+	$@
 am_test1_OBJECTS = test/test1-test1.$(OBJEXT)
 test1_OBJECTS = $(am_test1_OBJECTS)
 test1_LDADD = $(LDADD)
@@ -127,7 +131,9 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = src/$(DEPDIR)/main.Po \
+am__depfiles_remade = src/$(DEPDIR)/mgs-backend.Po \
+	src/$(DEPDIR)/mgs-interface.Po src/$(DEPDIR)/mgs-main.Po \
+	src/$(DEPDIR)/mgs-mgs.Po src/$(DEPDIR)/mgs-sdl.Po \
 	test/$(DEPDIR)/test1-test1.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -495,7 +501,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-mgs_SOURCES = src/main.c
+mgs_SOURCES = src/main.c \
+               src/backend.c \
+               src/interface.c \
+               src/mgs.c \
+               src/sdl.c
+
+mgs_CPPFLAGS = @SDL2_CFLAGS@
+mgs_LDFLAGS = @SDL2_LIBS@
 test1_SOURCES = test/test1.c
 test1_CPPFLAGS = @CHECK_CFLAGS@
 test1_LDFLAGS = @CHECK_LIBS@
@@ -605,11 +618,20 @@ src/$(am__dirstamp):
 src/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
-src/main.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/mgs-main.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/mgs-backend.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/mgs-interface.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/mgs-mgs.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/mgs-sdl.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 
 mgs$(EXEEXT): $(mgs_OBJECTS) $(mgs_DEPENDENCIES) $(EXTRA_mgs_DEPENDENCIES) 
 	@rm -f mgs$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(mgs_OBJECTS) $(mgs_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(mgs_LINK) $(mgs_OBJECTS) $(mgs_LDADD) $(LIBS)
 test/$(am__dirstamp):
 	@$(MKDIR_P) test
 	@: > test/$(am__dirstamp)
@@ -631,7 +653,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-backend.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-interface.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-mgs.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-sdl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test1-test1.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -655,6 +681,76 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+src/mgs-main.o: src/main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-main.o -MD -MP -MF src/$(DEPDIR)/mgs-main.Tpo -c -o src/mgs-main.o `test -f 'src/main.c' || echo '$(srcdir)/'`src/main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-main.Tpo src/$(DEPDIR)/mgs-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/main.c' object='src/mgs-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-main.o `test -f 'src/main.c' || echo '$(srcdir)/'`src/main.c
+
+src/mgs-main.obj: src/main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-main.obj -MD -MP -MF src/$(DEPDIR)/mgs-main.Tpo -c -o src/mgs-main.obj `if test -f 'src/main.c'; then $(CYGPATH_W) 'src/main.c'; else $(CYGPATH_W) '$(srcdir)/src/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-main.Tpo src/$(DEPDIR)/mgs-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/main.c' object='src/mgs-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-main.obj `if test -f 'src/main.c'; then $(CYGPATH_W) 'src/main.c'; else $(CYGPATH_W) '$(srcdir)/src/main.c'; fi`
+
+src/mgs-backend.o: src/backend.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-backend.o -MD -MP -MF src/$(DEPDIR)/mgs-backend.Tpo -c -o src/mgs-backend.o `test -f 'src/backend.c' || echo '$(srcdir)/'`src/backend.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-backend.Tpo src/$(DEPDIR)/mgs-backend.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/backend.c' object='src/mgs-backend.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-backend.o `test -f 'src/backend.c' || echo '$(srcdir)/'`src/backend.c
+
+src/mgs-backend.obj: src/backend.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-backend.obj -MD -MP -MF src/$(DEPDIR)/mgs-backend.Tpo -c -o src/mgs-backend.obj `if test -f 'src/backend.c'; then $(CYGPATH_W) 'src/backend.c'; else $(CYGPATH_W) '$(srcdir)/src/backend.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-backend.Tpo src/$(DEPDIR)/mgs-backend.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/backend.c' object='src/mgs-backend.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-backend.obj `if test -f 'src/backend.c'; then $(CYGPATH_W) 'src/backend.c'; else $(CYGPATH_W) '$(srcdir)/src/backend.c'; fi`
+
+src/mgs-interface.o: src/interface.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-interface.o -MD -MP -MF src/$(DEPDIR)/mgs-interface.Tpo -c -o src/mgs-interface.o `test -f 'src/interface.c' || echo '$(srcdir)/'`src/interface.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-interface.Tpo src/$(DEPDIR)/mgs-interface.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/interface.c' object='src/mgs-interface.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-interface.o `test -f 'src/interface.c' || echo '$(srcdir)/'`src/interface.c
+
+src/mgs-interface.obj: src/interface.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-interface.obj -MD -MP -MF src/$(DEPDIR)/mgs-interface.Tpo -c -o src/mgs-interface.obj `if test -f 'src/interface.c'; then $(CYGPATH_W) 'src/interface.c'; else $(CYGPATH_W) '$(srcdir)/src/interface.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-interface.Tpo src/$(DEPDIR)/mgs-interface.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/interface.c' object='src/mgs-interface.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-interface.obj `if test -f 'src/interface.c'; then $(CYGPATH_W) 'src/interface.c'; else $(CYGPATH_W) '$(srcdir)/src/interface.c'; fi`
+
+src/mgs-mgs.o: src/mgs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-mgs.o -MD -MP -MF src/$(DEPDIR)/mgs-mgs.Tpo -c -o src/mgs-mgs.o `test -f 'src/mgs.c' || echo '$(srcdir)/'`src/mgs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-mgs.Tpo src/$(DEPDIR)/mgs-mgs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/mgs.c' object='src/mgs-mgs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-mgs.o `test -f 'src/mgs.c' || echo '$(srcdir)/'`src/mgs.c
+
+src/mgs-mgs.obj: src/mgs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-mgs.obj -MD -MP -MF src/$(DEPDIR)/mgs-mgs.Tpo -c -o src/mgs-mgs.obj `if test -f 'src/mgs.c'; then $(CYGPATH_W) 'src/mgs.c'; else $(CYGPATH_W) '$(srcdir)/src/mgs.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-mgs.Tpo src/$(DEPDIR)/mgs-mgs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/mgs.c' object='src/mgs-mgs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-mgs.obj `if test -f 'src/mgs.c'; then $(CYGPATH_W) 'src/mgs.c'; else $(CYGPATH_W) '$(srcdir)/src/mgs.c'; fi`
+
+src/mgs-sdl.o: src/sdl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-sdl.o -MD -MP -MF src/$(DEPDIR)/mgs-sdl.Tpo -c -o src/mgs-sdl.o `test -f 'src/sdl.c' || echo '$(srcdir)/'`src/sdl.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-sdl.Tpo src/$(DEPDIR)/mgs-sdl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/sdl.c' object='src/mgs-sdl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-sdl.o `test -f 'src/sdl.c' || echo '$(srcdir)/'`src/sdl.c
+
+src/mgs-sdl.obj: src/sdl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-sdl.obj -MD -MP -MF src/$(DEPDIR)/mgs-sdl.Tpo -c -o src/mgs-sdl.obj `if test -f 'src/sdl.c'; then $(CYGPATH_W) 'src/sdl.c'; else $(CYGPATH_W) '$(srcdir)/src/sdl.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/mgs-sdl.Tpo src/$(DEPDIR)/mgs-sdl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/sdl.c' object='src/mgs-sdl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/mgs-sdl.obj `if test -f 'src/sdl.c'; then $(CYGPATH_W) 'src/sdl.c'; else $(CYGPATH_W) '$(srcdir)/src/sdl.c'; fi`
 
 test/test1-test1.o: test/test1.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test/test1-test1.o -MD -MP -MF test/$(DEPDIR)/test1-test1.Tpo -c -o test/test1-test1.o `test -f 'test/test1.c' || echo '$(srcdir)/'`test/test1.c
@@ -1160,7 +1256,11 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f src/$(DEPDIR)/main.Po
+		-rm -f src/$(DEPDIR)/mgs-backend.Po
+	-rm -f src/$(DEPDIR)/mgs-interface.Po
+	-rm -f src/$(DEPDIR)/mgs-main.Po
+	-rm -f src/$(DEPDIR)/mgs-mgs.Po
+	-rm -f src/$(DEPDIR)/mgs-sdl.Po
 	-rm -f test/$(DEPDIR)/test1-test1.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -1209,7 +1309,11 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f src/$(DEPDIR)/main.Po
+		-rm -f src/$(DEPDIR)/mgs-backend.Po
+	-rm -f src/$(DEPDIR)/mgs-interface.Po
+	-rm -f src/$(DEPDIR)/mgs-main.Po
+	-rm -f src/$(DEPDIR)/mgs-mgs.Po
+	-rm -f src/$(DEPDIR)/mgs-sdl.Po
 	-rm -f test/$(DEPDIR)/test1-test1.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

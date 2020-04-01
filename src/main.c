@@ -45,8 +45,7 @@ int main (int argc, char **argv) {
 
     destroy_mgs (mgs);
     destroy_backend (backend);
-    /* we don't destroy the interface because it destroys itself
-     * when the user closes the window */
+    destroy_interface (interface);
 
     puts ("Goodbye!");
 
