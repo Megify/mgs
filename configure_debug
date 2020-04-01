@@ -1,0 +1,3 @@
+#!/bin/sh
+
+../configure CPPFLAGS=-DDEBUG CFLAGS="-Wall -Werror -Wpedantic -ansi -ggdb -Og"
