@@ -40,6 +40,9 @@ void run_backend (backend_t *backend) {
 
     /* TODO: poll events and dispatch them to the interfaces associated with the
      * source window */
+
+    /* TEMP */
+    SDL_Delay (2000);
 }
 
 void register_audio_callback (backend_t *backend,

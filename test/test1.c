@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <check.h>
 
 START_TEST(test_1) {
@@ -12,8 +11,8 @@ START_TEST(test_1) {
 
 int main (int argc, char **argv) {
 
-    Suite *test_suite;
     TCase *test_case;
+    Suite *test_suite;
     SRunner *suite_runner;
 
     int n_failures;

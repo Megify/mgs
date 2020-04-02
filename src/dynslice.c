@@ -1,14 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "dynslice.h"
 
-struct DynamicSlice {
-    void **data;
-    unsigned int size;
-    unsigned int capacity;
-};
-
-struct DynamicSlice *create_dynamic_lice() {
+struct DynamicSlice *create_dynamic_slice() {
     struct DynamicSlice *newSlice = (struct DynamicSlice *) malloc(sizeof(struct DynamicSlice));
     
     newSlice->data     = malloc(sizeof(void *) * CAPACITY);
@@ -18,13 +13,18 @@ struct DynamicSlice *create_dynamic_lice() {
     return newSlice;
 }
 
+void free_dynamic_slice(struct DynamicSlice *slice) {
+    free(slice->data);
+    free(slice);
+}
+
 void *get(struct DynamicSlice *slice, int offset) {
     if (offset >= 0) {
         return slice->data[offset];
     }
     
     else {
-        return slice->data[slice->size - offset];
+        return slice->data[slice->size + offset];
     }
 }
 

@@ -87,7 +87,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = mgs$(EXEEXT)
-check_PROGRAMS = test1$(EXEEXT)
+check_PROGRAMS = test1$(EXEEXT) dynamic_slice_test$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -104,6 +104,13 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
+am_dynamic_slice_test_OBJECTS =  \
+	test/dynamic_slice_test-test_dynamic_slice.$(OBJEXT) \
+	src/dynamic_slice_test-dynslice.$(OBJEXT)
+dynamic_slice_test_OBJECTS = $(am_dynamic_slice_test_OBJECTS)
+dynamic_slice_test_LDADD = $(LDADD)
+dynamic_slice_test_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(dynamic_slice_test_LDFLAGS) $(LDFLAGS) -o $@
 am_mgs_OBJECTS = src/mgs-main.$(OBJEXT) src/mgs-backend.$(OBJEXT) \
 	src/mgs-interface.$(OBJEXT) src/mgs-mgs.$(OBJEXT) \
 	src/mgs-sdl.$(OBJEXT)
@@ -131,9 +138,11 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = src/$(DEPDIR)/mgs-backend.Po \
-	src/$(DEPDIR)/mgs-interface.Po src/$(DEPDIR)/mgs-main.Po \
-	src/$(DEPDIR)/mgs-mgs.Po src/$(DEPDIR)/mgs-sdl.Po \
+am__depfiles_remade = src/$(DEPDIR)/dynamic_slice_test-dynslice.Po \
+	src/$(DEPDIR)/mgs-backend.Po src/$(DEPDIR)/mgs-interface.Po \
+	src/$(DEPDIR)/mgs-main.Po src/$(DEPDIR)/mgs-mgs.Po \
+	src/$(DEPDIR)/mgs-sdl.Po \
+	test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Po \
 	test/$(DEPDIR)/test1-test1.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -152,8 +161,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(mgs_SOURCES) $(test1_SOURCES)
-DIST_SOURCES = $(mgs_SOURCES) $(test1_SOURCES)
+SOURCES = $(dynamic_slice_test_SOURCES) $(mgs_SOURCES) \
+	$(test1_SOURCES)
+DIST_SOURCES = $(dynamic_slice_test_SOURCES) $(mgs_SOURCES) \
+	$(test1_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -512,6 +523,9 @@ mgs_LDFLAGS = @SDL2_LIBS@
 test1_SOURCES = test/test1.c
 test1_CPPFLAGS = @CHECK_CFLAGS@
 test1_LDFLAGS = @CHECK_LIBS@
+dynamic_slice_test_SOURCES = test/test_dynamic_slice.c src/dynslice.c
+dynamic_slice_test_CPPFLAGS = @CHECK_CFLAGS@
+dynamic_slice_test_LDFLAGS = @CHECK_LIBS@
 TESTS = $(check_PROGRAMS)
 man_MANS = mgs.1
 all: config.h
@@ -612,12 +626,26 @@ clean-binPROGRAMS:
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+test/$(am__dirstamp):
+	@$(MKDIR_P) test
+	@: > test/$(am__dirstamp)
+test/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) test/$(DEPDIR)
+	@: > test/$(DEPDIR)/$(am__dirstamp)
+test/dynamic_slice_test-test_dynamic_slice.$(OBJEXT):  \
+	test/$(am__dirstamp) test/$(DEPDIR)/$(am__dirstamp)
 src/$(am__dirstamp):
 	@$(MKDIR_P) src
 	@: > src/$(am__dirstamp)
 src/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
+src/dynamic_slice_test-dynslice.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+
+dynamic_slice_test$(EXEEXT): $(dynamic_slice_test_OBJECTS) $(dynamic_slice_test_DEPENDENCIES) $(EXTRA_dynamic_slice_test_DEPENDENCIES) 
+	@rm -f dynamic_slice_test$(EXEEXT)
+	$(AM_V_CCLD)$(dynamic_slice_test_LINK) $(dynamic_slice_test_OBJECTS) $(dynamic_slice_test_LDADD) $(LIBS)
 src/mgs-main.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/mgs-backend.$(OBJEXT): src/$(am__dirstamp) \
@@ -632,12 +660,6 @@ src/mgs-sdl.$(OBJEXT): src/$(am__dirstamp) \
 mgs$(EXEEXT): $(mgs_OBJECTS) $(mgs_DEPENDENCIES) $(EXTRA_mgs_DEPENDENCIES) 
 	@rm -f mgs$(EXEEXT)
 	$(AM_V_CCLD)$(mgs_LINK) $(mgs_OBJECTS) $(mgs_LDADD) $(LIBS)
-test/$(am__dirstamp):
-	@$(MKDIR_P) test
-	@: > test/$(am__dirstamp)
-test/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) test/$(DEPDIR)
-	@: > test/$(DEPDIR)/$(am__dirstamp)
 test/test1-test1.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 
@@ -653,11 +675,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dynamic_slice_test-dynslice.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-backend.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-interface.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-main.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-mgs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mgs-sdl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test1-test1.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -681,6 +705,34 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+test/dynamic_slice_test-test_dynamic_slice.o: test/test_dynamic_slice.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dynamic_slice_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test/dynamic_slice_test-test_dynamic_slice.o -MD -MP -MF test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Tpo -c -o test/dynamic_slice_test-test_dynamic_slice.o `test -f 'test/test_dynamic_slice.c' || echo '$(srcdir)/'`test/test_dynamic_slice.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Tpo test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_dynamic_slice.c' object='test/dynamic_slice_test-test_dynamic_slice.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dynamic_slice_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test/dynamic_slice_test-test_dynamic_slice.o `test -f 'test/test_dynamic_slice.c' || echo '$(srcdir)/'`test/test_dynamic_slice.c
+
+test/dynamic_slice_test-test_dynamic_slice.obj: test/test_dynamic_slice.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dynamic_slice_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test/dynamic_slice_test-test_dynamic_slice.obj -MD -MP -MF test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Tpo -c -o test/dynamic_slice_test-test_dynamic_slice.obj `if test -f 'test/test_dynamic_slice.c'; then $(CYGPATH_W) 'test/test_dynamic_slice.c'; else $(CYGPATH_W) '$(srcdir)/test/test_dynamic_slice.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Tpo test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_dynamic_slice.c' object='test/dynamic_slice_test-test_dynamic_slice.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dynamic_slice_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test/dynamic_slice_test-test_dynamic_slice.obj `if test -f 'test/test_dynamic_slice.c'; then $(CYGPATH_W) 'test/test_dynamic_slice.c'; else $(CYGPATH_W) '$(srcdir)/test/test_dynamic_slice.c'; fi`
+
+src/dynamic_slice_test-dynslice.o: src/dynslice.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dynamic_slice_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/dynamic_slice_test-dynslice.o -MD -MP -MF src/$(DEPDIR)/dynamic_slice_test-dynslice.Tpo -c -o src/dynamic_slice_test-dynslice.o `test -f 'src/dynslice.c' || echo '$(srcdir)/'`src/dynslice.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dynamic_slice_test-dynslice.Tpo src/$(DEPDIR)/dynamic_slice_test-dynslice.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/dynslice.c' object='src/dynamic_slice_test-dynslice.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dynamic_slice_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/dynamic_slice_test-dynslice.o `test -f 'src/dynslice.c' || echo '$(srcdir)/'`src/dynslice.c
+
+src/dynamic_slice_test-dynslice.obj: src/dynslice.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dynamic_slice_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/dynamic_slice_test-dynslice.obj -MD -MP -MF src/$(DEPDIR)/dynamic_slice_test-dynslice.Tpo -c -o src/dynamic_slice_test-dynslice.obj `if test -f 'src/dynslice.c'; then $(CYGPATH_W) 'src/dynslice.c'; else $(CYGPATH_W) '$(srcdir)/src/dynslice.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dynamic_slice_test-dynslice.Tpo src/$(DEPDIR)/dynamic_slice_test-dynslice.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/dynslice.c' object='src/dynamic_slice_test-dynslice.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dynamic_slice_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/dynamic_slice_test-dynslice.obj `if test -f 'src/dynslice.c'; then $(CYGPATH_W) 'src/dynslice.c'; else $(CYGPATH_W) '$(srcdir)/src/dynslice.c'; fi`
 
 src/mgs-main.o: src/main.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mgs_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/mgs-main.o -MD -MP -MF src/$(DEPDIR)/mgs-main.Tpo -c -o src/mgs-main.o `test -f 'src/main.c' || echo '$(srcdir)/'`src/main.c
@@ -1016,6 +1068,13 @@ test1.log: test1$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+dynamic_slice_test.log: dynamic_slice_test$(EXEEXT)
+	@p='dynamic_slice_test$(EXEEXT)'; \
+	b='dynamic_slice_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -1256,11 +1315,13 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f src/$(DEPDIR)/mgs-backend.Po
+		-rm -f src/$(DEPDIR)/dynamic_slice_test-dynslice.Po
+	-rm -f src/$(DEPDIR)/mgs-backend.Po
 	-rm -f src/$(DEPDIR)/mgs-interface.Po
 	-rm -f src/$(DEPDIR)/mgs-main.Po
 	-rm -f src/$(DEPDIR)/mgs-mgs.Po
 	-rm -f src/$(DEPDIR)/mgs-sdl.Po
+	-rm -f test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Po
 	-rm -f test/$(DEPDIR)/test1-test1.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -1309,11 +1370,13 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f src/$(DEPDIR)/mgs-backend.Po
+		-rm -f src/$(DEPDIR)/dynamic_slice_test-dynslice.Po
+	-rm -f src/$(DEPDIR)/mgs-backend.Po
 	-rm -f src/$(DEPDIR)/mgs-interface.Po
 	-rm -f src/$(DEPDIR)/mgs-main.Po
 	-rm -f src/$(DEPDIR)/mgs-mgs.Po
 	-rm -f src/$(DEPDIR)/mgs-sdl.Po
+	-rm -f test/$(DEPDIR)/dynamic_slice_test-test_dynamic_slice.Po
 	-rm -f test/$(DEPDIR)/test1-test1.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
